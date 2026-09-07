@@ -11,15 +11,15 @@ class DashboardPage:
         self.wait = WebDriverWait(driver, timeout)
 
         # Locators
-        self.dashboard_header = (By.XPATH, "//h6[text()='Dashboard']")
+        self.dashboard_header = (By.XPATH, "//h6[normalize-space()='Dashboard']")
         self.pim_menu_link = (By.XPATH, "//a[contains(@href, 'viewPimModule')]")
         self.user_dropdown = (By.CLASS_NAME, "oxd-userdropdown-tab")
         self.logout_link = (By.XPATH, "//a[text()='Logout']")
 
     def is_dashboard_displayed(self) -> bool:
-        """Verify if the Dashboard header element is visible."""
+        """Verify that the Dashboard page is displayed."""
         try:
-            element = self.wait.until(
+            element = WebDriverWait(self.driver, 20).until(
                 EC.visibility_of_element_located(self.dashboard_header)
             )
             return element.is_displayed()
@@ -34,11 +34,14 @@ class DashboardPage:
         return element.text
 
     def navigate_to_pim(self):
-        """Navigate to the PIM module from the side navigation menu."""
+        """Hover over the PIM menu and click it."""
+        from selenium.webdriver.common.action_chains import ActionChains
+
         pim_link = self.wait.until(
-            EC.element_to_be_clickable(self.pim_menu_link)
+            EC.visibility_of_element_located(self.pim_menu_link)
         )
-        pim_link.click()
+
+        ActionChains(self.driver).move_to_element(pim_link).pause(0.5).click().perform()
 
     def logout(self):
         """Log out of the application using the user dropdown menu."""
